@@ -1,6 +1,6 @@
 [package]
 name = "tesseract-plumbing"
-version = "0.6.1"
+version = "0.6.2"
 authors = ["Chris Couzens <ccouzens@gmail.com>"]
 edition = "2018"
 description = "Safe wrapper of `tesseract-sys`"
@@ -13,6 +13,10 @@ license = "MIT"
 tesseract-sys = "~0.5"
 leptonica-plumbing = "~0.4"
 thiserror = "1.0"
+
+[features]
+api_41 = []
+default = ["api_41"]
 
 [dev-dependencies]
 image = "0.23.14"

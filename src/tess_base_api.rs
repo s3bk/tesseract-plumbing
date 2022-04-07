@@ -2,16 +2,23 @@ extern crate tesseract_sys;
 extern crate thiserror;
 
 use self::tesseract_sys::{
-    TessBaseAPIAllWordConfidences, TessBaseAPICreate, TessBaseAPIDelete, TessBaseAPIGetAltoText,
+    TessBaseAPIAllWordConfidences, TessBaseAPICreate, TessBaseAPIDelete,
     TessBaseAPIGetComponentImages, TessBaseAPIGetHOCRText, TessBaseAPIGetInputImage,
-    TessBaseAPIGetLSTMBoxText, TessBaseAPIGetSourceYResolution, TessBaseAPIGetTsvText,
-    TessBaseAPIGetUTF8Text, TessBaseAPIGetWordStrBoxText, TessBaseAPIInit2, TessBaseAPIInit3,
+    TessBaseAPIGetSourceYResolution,
+    TessBaseAPIGetUTF8Text, TessBaseAPIInit2, TessBaseAPIInit3,
     TessBaseAPIMeanTextConf, TessBaseAPIRecognize, TessBaseAPISetImage, TessBaseAPISetImage2,
     TessBaseAPISetRectangle, TessBaseAPISetSourceResolution, TessBaseAPISetVariable,
     TessDeleteIntArray, TessOcrEngineMode, TessPageIteratorLevel,
 };
+#[cfg(feature="api_41")]
+use self::tesseract_sys::{
+    TessBaseAPIGetAltoText, TessBaseAPIGetLSTMBoxText,  TessBaseAPIGetTsvText,
+    TessBaseAPIGetWordStrBoxText,
+};
+
 use self::thiserror::Error;
 use crate::Text;
+use crate::ResultIterator;
 use leptonica_plumbing::Pix;
 use std::convert::TryInto;
 use std::ffi::CStr;
@@ -314,6 +321,7 @@ impl TessBaseApi {
     /// Wrapper for [`TessBaseAPIGetAltoText`](https://tesseract-ocr.github.io/tessapi/5.x/a00008.html#a37b6dad313c531901dcca9de5ccb37b3)
     ///
     /// Make an XML-formatted string with Alto markup from the internal data structures.
+    #[cfg(feature="api_41")]
     pub fn get_alto_text(
         &mut self,
         page_number: c_int,
@@ -329,6 +337,7 @@ impl TessBaseApi {
     /// Wrapper for [`TessBaseAPIGetTsvText`](https://tesseract-ocr.github.io/tessapi/5.x/a00008.html#ac53c7f530eca78b348d84ef4348103f5)
     ///
     /// Make a TSV-formatted string from the internal data structures. page_number is 0-based but will appear in the output as 1-based.
+    #[cfg(feature="api_41")]
     pub fn get_tsv_text(&mut self, page_number: c_int) -> Result<Text, TessBaseApiGetTsvTextError> {
         let ptr = unsafe { TessBaseAPIGetTsvText(self.0, page_number) };
         if ptr.is_null() {
@@ -341,6 +350,7 @@ impl TessBaseApi {
     /// Wrapper for [`TessBaseAPIGetLSTMBoxText`](https://tesseract-ocr.github.io/tessapi/5.x/a00008.html#a60205153043d51a977f1f4fb1923da18)
     ///
     /// Make a box file for LSTM training from the internal data structures. Constructs coordinates in the original image - not just the rectangle. page_number is a 0-based page index that will appear in the box file.
+    #[cfg(feature="api_41")]
     pub fn get_lstm_box_text(
         &mut self,
         page_number: c_int,
@@ -358,6 +368,7 @@ impl TessBaseApi {
     /// The recognized text is returned as a char* which is coded in the same format as a WordStr box file used in training. page_number is a 0-based page index that will appear in the box file. Returned string must be freed with the delete [] operator.
     ///
     /// Create a UTF8 box file with WordStr strings from the internal data structures. page_number is a 0-base page index that will appear in the box file.
+    #[cfg(feature="api_41")]
     pub fn get_word_str_box_text(
         &mut self,
         page_number: c_int,
@@ -421,6 +432,17 @@ impl TessBaseApi {
             Err(TessBaseApiGetComponentImagesError {})
         } else {
             Ok(unsafe { leptonica_plumbing::Boxa::new_from_pointer(ptr) })
+        }
+    }
+
+
+    pub fn get_iterator(&self) -> Option<ResultIterator> {
+        unsafe {
+            let iter = tesseract_sys::TessBaseAPIGetIterator(self.0);
+            if iter.is_null() {
+                return None;
+            }
+            Some(ResultIterator::new(self, iter))
         }
     }
 }
