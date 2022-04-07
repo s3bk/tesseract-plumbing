@@ -29,3 +29,13 @@ pub enum Level {
 pub fn version() -> &'static CStr {
     unsafe { CStr::from_ptr(TessVersion()) }
 }
+
+pub use result_iterator::{Bbox, ResultIterator, FontAttributes};
+
+pub enum Level {
+    Block,    // Block of text/image/separator line.
+    Para,     // Paragraph within a block.
+    Textline, // Line within a paragraph.
+    Word,     // Word within a textline.
+    Symbol    // Symbol/character within a word.
+}
