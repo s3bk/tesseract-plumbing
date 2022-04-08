@@ -8,7 +8,7 @@ pub use tess_base_api::{
     TessBaseApi, TessBaseApiGetAltoTextError, TessBaseApiGetHocrTextError,
     TessBaseApiGetLstmBoxTextError, TessBaseApiGetTsvTextError, TessBaseApiGetUtf8TextError,
     TessBaseApiGetWordStrBoxTextError, TessBaseApiInitError, TessBaseApiRecogniseError,
-    TessBaseApiSetImageSafetyError, TessBaseApiSetVariableError,
+    TessBaseApiSetImageSafetyError, TessBaseApiSetVariableError, PageSegMode,
 };
 pub use tesseract_sys;
 pub use text::Text;

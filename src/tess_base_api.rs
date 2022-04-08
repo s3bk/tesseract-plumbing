@@ -445,6 +445,29 @@ impl TessBaseApi {
             Some(ResultIterator::new(self, iter))
         }
     }
+
+    pub fn set_page_segmentation_mode(&mut self, mode: PageSegMode) {
+        unsafe {
+            tesseract_sys::TessBaseAPISetPageSegMode(self.0, mode as _);
+        }
+    }
+}
+
+pub enum PageSegMode {
+    OsdOnly,
+    AutoOsd,
+    AutoOnly,
+    Auto,
+    SingleColumn,
+    SingleBlockVertText,
+    SingleBlock,
+    SingleLine,
+    SingleWord,
+    CircleWord,
+    SingleChar,
+    SparseText,
+    SparseTextOsd,
+    Count,
 }
 
 #[test]
