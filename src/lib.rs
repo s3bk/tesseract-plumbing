@@ -22,6 +22,7 @@ pub enum Level {
     Textline, // Line within a paragraph.
     Word,     // Word within a textline.
     Symbol    // Symbol/character within a word.
+}
 
 /// Wrapper for [`Version`](https://tesseract-ocr.github.io/tessapi/5.x/a02438.html#a3785779c909fcdd77e24b340f5913e4b)
 ///
